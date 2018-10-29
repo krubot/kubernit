@@ -1,0 +1,36 @@
+replicaCount: 2
+updateStrategy: {}
+image:
+  repository: jfelten/openvpn-docker
+  tag: 1.1.0
+  pullPolicy: IfNotPresent
+service:
+  type: NodePort
+  externalPort: 1194
+  internalPort: 1194
+  externalIPs: []
+  hostNetwork: true
+  annotations: {}
+resources:
+  limits:
+    cpu: 100m
+    memory: 50Mi
+  requests:
+    cpu: 100m
+    memory: 50Mi
+persistence:
+  enabled: false
+  accessMode: ReadWriteOnce
+  size: 2M
+openvpn:
+  OVPN_NETWORK: 10.240.0.0
+  OVPN_SUBNET: 255.255.0.0
+  OVPN_PROTO: tcp
+  OVPN_K8S_POD_NETWORK: "10.200.0.0"
+  OVPN_K8S_POD_SUBNET: "255.255.0.0"
+  dhcpOptionDomain: true
+  redirectGateway: false
+  conf: |
+    cipher AES-256-CBC
+    tun-mtu 1500
+    push "dhcp-option DNS 1.1.1.1"

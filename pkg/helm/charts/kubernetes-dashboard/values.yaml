@@ -1,0 +1,39 @@
+image:
+  repository: k8s.gcr.io/kubernetes-dashboard-amd64
+  tag: v1.8.3
+  pullPolicy: IfNotPresent
+replicaCount: 1
+labels: {}
+nodeSelector: {}
+tolerations: []
+service:
+  type: ClusterIP
+  externalPort: 443
+  nameOverride: 'kubernetes-dashboard'
+  annotations: {}
+  labels: {}
+  kubernetes.io/name: "Kubernetes Dashboard"
+resources:
+  limits:
+    cpu: 100m
+    memory: 50Mi
+  requests:
+    cpu: 100m
+    memory: 50Mi
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  path: /
+  hosts:
+    - kubernetes-dashboard.domain.com
+  tls:
+    - secretName: kubernetes-dashboard-tls
+      hosts:
+        - kubernetes-dashboard.domain.com
+rbac:
+  create: true
+  clusterAdminRole: false
+serviceAccount:
+  create: true
+  name: kubernetes-dashboard-sa

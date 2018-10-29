@@ -1,0 +1,22 @@
+#!/bin/sh
+
+for opt in $(cat /proc/cmdline); do
+	case "$opt" in
+	ipAddress=*)
+		fullAddress=${opt#ipAddress=}
+		ip=${fullAddress%,*}
+		;;
+	ipBroadcast=*)
+		fullBroadcast=${opt#ipBroadcast=}
+		broadcast=${fullBroadcast%,*}
+		;;
+	ipMask=*)
+		fullMask=${opt#ipMask=}
+		mask=${fullMask%,*}
+		;;
+	esac
+done
+
+/sbin/ip addr add $ip/$mask broadcast $broadcast scope global dev eth0
+/sbin/ip route add default proto kernel scope link metric 202 dev eth0 src $ip
+/sbin/ip link set eth0 up

@@ -1,0 +1,48 @@
+kernel:
+  image: linuxkit/kernel:4.9.93
+  cmdline: "console=tty0 ipAddress=192.168.58.2 ipBroadcast=192.167.58.255 ipMask=24"
+init:
+  - wombat/init:dev
+  - wombat/runc:dev
+  - wombat/containerd:dev
+  - wombat/ca-certificates:dev
+  - wombat/getty:dev
+onboot:
+  - name: sysctl
+    image: wombat/sysctl:dev
+    pid: "host"
+    capabilities:
+      - CAP_SYS_ADMIN
+    binds:
+      - /etc/sysctl.d/ipv6.conf:/etc/sysctl.d/ipv6.conf
+      - /etc/hosts:/etc/hosts
+    readonly: false
+#  - name: dhcpcd
+#    image: wombat/dhcpcd:dev
+#    binds:
+#      - /run/resolvconf:/etc
+#    capabilities:
+#      - CAP_NET_ADMIN
+#      - CAP_NET_BIND_SERVICE
+#      - CAP_NET_RAW
+#      - CAP_SYS_ADMIN
+#    command: ["/sbin/dhcpcd", "--nobackground", "-f", "/dhcpcd.conf", "-1"]
+services:
+  - name: nfs-server
+    image: wombat/nfs-server:dev
+    binds:
+      - /var/run:/var/run
+      - /tmp:/tmp
+    capabilities:
+      - all
+    pid: host
+    runtime:
+      mkdir:
+        - /tmp/exports
+files:
+  - path: etc/sysctl.d/ipv6.conf
+    contents: |
+      net.ipv6.conf.all.disable_ipv6=1
+      net.ipv6.conf.default.disable_ipv6 = 1
+  - path: etc/hosts
+    contents: '127.0.0.1  localhost'

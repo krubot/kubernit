@@ -1,0 +1,9 @@
+# exportfs
+#
+# The file /etc/exports contains a table of local physical file systems on an
+# NFS server that are accessible to NFS clients. The contents of the file are
+# maintained by the server's system administrator.
+#
+# man exports(5) http://man7.org/linux/man-pages/man5/exports.5.html
+
+/tmp/exports            *(rw,insecure,sync,no_subtree_check,fsid=0)

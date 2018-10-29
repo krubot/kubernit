@@ -1,0 +1,82 @@
+# Default values for flux.
+
+# Weave Cloud service token
+token: ""
+
+replicaCount: 1
+
+image:
+  repository: quay.io/weaveworks/flux
+  tag: 1.5.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3030
+
+helmOperator:
+  create: false
+  repository: quay.io/weaveworks/helm-operator
+  tag: 0.1.1-alpha
+  pullPolicy: IfNotPresent
+  tillerNamespace: kube-system
+  logReleaseDiffs: false
+  tls:
+    secretName: 'helm-client-certs'
+    verify: false
+    enable: false
+    keyFile: 'tls.key'
+    certFile: 'tls.crt'
+    caContent: ''
+
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+resources: {}
+  # If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+git:
+  # URL of git repo with Kubernetes manifests; e.g. git.url=ssh://git@github.com/weaveworks/flux-example
+  url: ""
+  # Branch of git repo to use for Kubernetes manifests
+  branch: "master"
+  # Path within git repo to locate Kubernetes manifests (relative path)
+  path: ""
+  # Username to use as git committer
+  user: "Weave Flux"
+  # Email to use as git committer
+  email: "support@weave.works"
+  # Path within git repo to locate Helm charts (relative path)
+  chartsPath: "charts"
+  # Period at which to poll git repo for new commits
+  pollInterval: "30s"
+
+ssh:
+  # Overrides for git over SSH. If you use your own git server, you
+  # will likely need to provide a host key for it in this field.
+  known_hosts: ""
+
+#for https://github.com/justinbarrick/fluxcloud/
+#additionalArgs:
+# - --connect=ws://fluxcloud

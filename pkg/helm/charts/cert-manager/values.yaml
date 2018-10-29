@@ -1,0 +1,23 @@
+replicaCount: 2
+image:
+  repository: quay.io/jetstack/cert-manager-controller
+  tag: v0.4.0
+  pullPolicy: IfNotPresent
+createCustomResource: true
+clusterResourceNamespace: ""
+leaderElection:
+  namespace: ""
+certificateResourceShortNames: ["cert", "certs"]
+rbac:
+  create: true
+serviceAccount:
+  create: true
+  name: "cert-manager-sa"
+extraArgs: []
+extraEnv: []
+resources: {}
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+ingressShim: {}
+createNamespaceResource: false
