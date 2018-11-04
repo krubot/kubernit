@@ -15,21 +15,22 @@ function stop() {
     exit 0
 }
 
-sleep 10000
-
 trap stop TERM
 
 mount -t nfsd nfsd /proc/fs/nfsd
 
- echo 'starting rpcbind...'
+echo 'starting rpcbind...'
 /sbin/rpcbind -w
+echo "Displaying rpcbind status..."
+/sbin/rpcinfo
+/sbin/rpc.statd
 
-echo 'starting rpc.nfsd...'
-/usr/sbin/exportfs -r
-/usr/sbin/rpc.nfsd -G 10 -N 2 -N 3 -N 4 -V 4.1 2
-echo "NFS started"
+echo "Starting NFS in the background..."
+/usr/sbin/rpc.nfsd --debug 8 --no-udp --no-nfs-version 2
 
-echo 'starting rpc.mountd...'
-# -N 4.x: disable NFSv4
-# -V 3: enable NFSv3
-/usr/sbin/rpc.mountd -N 2 -V 3 -N 4 -N 4.1 --foreground
+echo "Exporting File System..."
+/usr/sbin/exportfs -rv
+/usr/sbin/exportfs
+
+echo "Starting Mountd in the background..."
+/usr/sbin/rpc.mountd --debug all --no-udp --no-nfs-version 2 --foreground

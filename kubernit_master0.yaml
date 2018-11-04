@@ -134,7 +134,6 @@ services:
     binds:
       - /tmp:/tmp
       - /dev:/dev
-      - /usr/bin/ctr:/usr/bin/ctr
       - /etc/resolv.conf:/etc/resolv.conf
       - /etc/os-release:/etc/os-release
       - /etc/kubelet.sh.conf:/etc/kubelet.sh.conf

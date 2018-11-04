@@ -1,12 +1,11 @@
 kernel:
-  image: linuxkit/kernel:4.9.93
+  image: linuxkit/kernel:4.14.59
   cmdline: "console=tty0 ipAddress=192.168.58.2 ipBroadcast=192.167.58.255 ipMask=24"
 init:
   - wombat/init:dev
   - wombat/runc:dev
   - wombat/containerd:dev
   - wombat/ca-certificates:dev
-  - wombat/getty:dev
 onboot:
   - name: sysctl
     image: wombat/sysctl:dev
@@ -17,17 +16,48 @@ onboot:
       - /etc/sysctl.d/ipv6.conf:/etc/sysctl.d/ipv6.conf
       - /etc/hosts:/etc/hosts
     readonly: false
-#  - name: dhcpcd
-#    image: wombat/dhcpcd:dev
-#    binds:
-#      - /run/resolvconf:/etc
-#    capabilities:
-#      - CAP_NET_ADMIN
-#      - CAP_NET_BIND_SERVICE
-#      - CAP_NET_RAW
-#      - CAP_SYS_ADMIN
-#    command: ["/sbin/dhcpcd", "--nobackground", "-f", "/dhcpcd.conf", "-1"]
+  - name: modprobe
+    image: linuxkit/modprobe:v0.6
+    command: ["modprobe", "-v", "nfsd"]
 services:
+  - name: getty
+    image: wombat/getty:dev
+    env:
+     - INSECURE=true
+    cgroupsPath: systemreserved/getty
+    pid: host
+    net: host
+    binds:
+      - /etc/resolv.conf:/etc/resolv.conf
+      - /run:/run
+      - /tmp:/tmp
+      - /etc:/hostroot/etc
+      - /usr/bin/ctr:/usr/bin/ctr
+      - /usr/bin/runc:/usr/bin/runc
+      - /containers:/containers
+      - /var/log:/var/log
+      - /dev:/dev
+      - /sys:/sys
+    capabilities:
+      - all
+  - name: sshd
+    image: wombat/sshd:dev
+    cgroupsPath: systemreserved/sshd
+    pid: host
+    binds:
+      - /root/.ssh:/root/.ssh
+      - /etc/resolv.conf:/etc/resolv.conf
+      - /run:/run
+      - /tmp:/tmp
+      - /etc:/hostroot/etc
+      - /usr/bin/ctr:/usr/bin/ctr
+      - /usr/bin/runc:/usr/bin/runc
+      - /containers:/containers
+      - /var/log:/var/log
+      - /dev:/dev
+      - /sys:/sys
+    capabilities:
+      - all
   - name: nfs-server
     image: wombat/nfs-server:dev
     binds:
@@ -35,14 +65,18 @@ services:
       - /tmp:/tmp
     capabilities:
       - all
+    rootfsPropagation: shared
     pid: host
     runtime:
       mkdir:
         - /tmp/exports
+        - /var/lib/nfs/statd/sm
 files:
   - path: etc/sysctl.d/ipv6.conf
     contents: |
       net.ipv6.conf.all.disable_ipv6=1
-      net.ipv6.conf.default.disable_ipv6 = 1
-  - path: etc/hosts
-    contents: '127.0.0.1  localhost'
+      net.ipv6.conf.default.disable_ipv6=1
+  - path: root/.ssh/authorized_keys
+    source: ~/.ssh/id_babylon.pub
+    mode: "0600"
+    optional: true

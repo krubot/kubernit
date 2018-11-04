@@ -2,11 +2,24 @@ FROM wombat/alpine:v0.1 AS mirror
 
 RUN mkdir -p /out/etc/apk && cp -r /etc/apk/* /out/etc/apk/
 RUN apk add --no-cache --initdb -p /out \
-    nfs-utils \
-    rpcbind \
+    alpine-baselayout \
+    apk-tools \
+    busybox \
+    ca-certificates \
+    coreutils \
+    curl \
+    ebtables \
+    ethtool \
+    findutils \
+    iproute2 \
     iptables \
-    bind \
-    bind-tools \
+    musl \
+    openssl \
+    openrc \
+    rpcbind \
+    socat \
+    util-linux \
+    nfs-utils \
     && true
 RUN rm -rf /out/etc/apk /out/lib/apk /out/var/cache
 
@@ -17,7 +30,5 @@ ENTRYPOINT []
 WORKDIR /
 COPY --from=mirror /out/ /
 COPY etc/ /etc/
-RUN echo "nfs             2049/tcp" >> /etc/services
-RUN echo "nfs             111/udp" >> /etc/services
 EXPOSE 2049/tcp 111/tcp 111/udp
-CMD ["/usr/bin/nfs.sh"]
+ENTRYPOINT ["/usr/bin/nfs.sh"]

@@ -27,6 +27,21 @@ if [ ! -e /var/lib/cni/.cni.conf-extracted ] && [ -d /run/config/cni ] ; then
     touch /var/lib/cni/.cni.configs-extracted
 fi
 
+# NFS client setup
+mount -t nfsd nfsd /proc/fs/nfsd
+
+echo 'starting rpcbind...'
+/sbin/rpcbind -w
+echo "Displaying rpcbind status..."
+/sbin/rpcinfo
+/sbin/rpc.statd
+
+echo "Starting NFS in the background..."
+/usr/sbin/rpc.nfsd --debug 8 --no-udp --no-nfs-version 2
+
+echo "Starting Mountd in the background..."
+/usr/sbin/rpc.mountd --debug all --no-udp --no-nfs-version 2
+
 await=/etc/kubernetes/kubelet.conf
 
 if [ -f "/etc/kubernetes/kubelet.conf" ] ; then

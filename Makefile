@@ -28,4 +28,4 @@ iso-storage:
 	@sleep 10
 	linuxkit build -format iso-bios kubernit_storage.yaml
 
-iso: iso-masters iso-nodes
+iso: iso-masters iso-nodes iso-storage

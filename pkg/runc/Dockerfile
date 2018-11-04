@@ -6,7 +6,7 @@ RUN \
   bash \
   gcc \
   git \
-  go1.10 \
+  go \
   libc-dev \
   libseccomp-dev \
   linux-headers \

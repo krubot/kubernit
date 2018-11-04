@@ -9,13 +9,6 @@ RUN apk add --no-cache --initdb -p /out \
     musl \
     tini \
     util-linux \
-    nfs-utils \
-    rpcbind \
-    iptables \
-    bind \
-    bind-tools \
-    libtirpc \
-    libtirpc-dev \
     && true
 RUN mv /out/etc/apk/repositories.upstream /out/etc/apk/repositories
 

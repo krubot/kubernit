@@ -1,2 +1,2 @@
-rpc_pipefs  /var/lib/nfs/rpc_pipefs rpc_pipefs  defaults  0 0
-nfsd  /proc/fs/nfsd nfsd  defaults  0 0
+rpc_pipefs /var/lib/nfs/rpc_pipefs rpc_pipefs defaults  0 0
+nfsd       /proc/fs/nfsd           nfsd       defaults  0 0

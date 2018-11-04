@@ -1,4 +1,4 @@
-FROM alpine:3.7 AS mirror
+FROM alpine:3.8 AS mirror
 
 # update base image
 RUN apk update && apk upgrade -a
@@ -31,7 +31,7 @@ RUN mv /etc/apk/repositories /etc/apk/repositories.upstream && echo "/mirror" > 
 # add Go validation tools
 COPY go-compile.sh /go/bin/
 # containerd v1.1.x requires go1.10 which is currently a separate package in Alpine 3.7
-RUN apk add --no-cache git go1.10 musl-dev
+RUN apk add --no-cache git go musl-dev
 ENV GOPATH=/go PATH=$PATH:/go/bin
 RUN go get -u golang.org/x/lint/golint
 RUN go get -u github.com/gordonklaus/ineffassign
