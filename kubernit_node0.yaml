@@ -204,4 +204,4 @@ files:
     source: config/node/kubeadm.yaml
   - path: etc/kubelet.sh.conf
     contents: |
-      KUBELET_ARGS="--node-ip=192.168.58.11"
+      KUBELET_ARGS="--node-ip=192.168.58.11 --node-labels=node-role.kubernetes.io/worker"

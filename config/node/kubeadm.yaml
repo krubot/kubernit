@@ -10,5 +10,7 @@ discoveryTokenUnsafeSkipCAVerification: true
 kind: NodeConfiguration
 nodeRegistration:
   criSocket: /run/containerd/containerd.sock
+  kubeletExtraArgs:
+    node-labels: "node-role.kubernetes.io/worker=true"
 tlsBootstrapToken: s73ybu.6tw6wnqgp5z0wb77
 token: s73ybu.6tw6wnqgp5z0wb77

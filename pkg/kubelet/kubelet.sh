@@ -67,14 +67,6 @@ echo "kubelet.sh: ${await} has arrived" 2>&1
 
 mkdir -p /etc/kubernetes/manifests
 
-# If using --cgroups-per-qos then need to use --cgroup-root=/ and not
-# the --cgroup-root=kubepods from below. This can be done at image
-# build time by adding to the service definition:
-#
-#    command:
-#      - /usr/bin/kubelet.sh
-#      - --cgroup-root=/
-#      - --cgroups-per-qos
 exec kubelet --kubeconfig=/etc/kubernetes/kubelet.conf \
 	      --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf \
 	      --pod-manifest-path=/etc/kubernetes/manifests \

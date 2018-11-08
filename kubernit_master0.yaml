@@ -208,4 +208,4 @@ files:
     source: config/master/kubeadm.yaml
   - path: etc/kubelet.sh.conf
     contents: |
-      KUBELET_ARGS="--node-ip=192.168.58.10"
+      KUBELET_ARGS="--node-ip=192.168.58.10 --node-labels=node-role.kubernetes.io/master"
