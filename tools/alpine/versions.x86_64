@@ -1,4 +1,4 @@
-# wombat/alpine:6bec83af5f44b7e67aa153e55167bfaddcfeb144-amd64
+# wombat/alpine:be00f0b0f54c798821340916c07cf0657a29f712-amd64
 # automatically generated list of installed packages
 abuild-3.2.0-r0
 alpine-baselayout-3.1.0-r0
@@ -24,7 +24,7 @@ btrfs-progs-4.17-r1
 btrfs-progs-dev-4.17-r1
 btrfs-progs-libs-4.17-r1
 build-base-0.5-r1
-busybox-1.28.4-r1
+busybox-1.28.4-r2
 busybox-initscripts-3.1-r3
 bzip2-1.0.6-r6
 ca-certificates-20171114-r3
@@ -40,7 +40,7 @@ cmake-bash-completion-3.11.1-r2
 coreutils-8.29-r2
 cryptsetup-2.0.2-r3
 cryptsetup-libs-2.0.2-r3
-curl-7.61.1-r0
+curl-7.61.1-r1
 db-5.3.28-r0
 dbus-libs-1.10.24-r1
 device-mapper-libs-2.02.178-r0
@@ -86,7 +86,7 @@ gmp-6.1.2-r1
 gmp-dev-6.1.2-r1
 gnupg-2.2.8-r0
 gnutls-3.6.2-r0
-go-1.10.1-r0
+go-1.10.5-r0
 grep-3.1-r2
 guile-2.0.14-r0
 guile-libs-2.0.14-r0
@@ -131,8 +131,8 @@ libcap-2.25-r1
 libcap-ng-0.7.9-r0
 libcap-ng-dev-0.7.9-r0
 libcom_err-1.44.2-r0
-libcrypto1.0-1.0.2p-r0
-libcurl-7.61.1-r0
+libcrypto1.0-1.0.2q-r0
+libcurl-7.61.1-r1
 libdrm-2.4.92-r0
 libedit-20170329.3.1-r3
 libedit-dev-20170329.3.1-r3
@@ -159,7 +159,7 @@ libltdl-2.4.6-r5
 libmagic-5.32-r0
 libmnl-1.0.4-r0
 libmount-2.32-r0
-libmspack-0.7.1_alpha-r0
+libmspack-0.8_alpha-r0
 libnfsidmap-2.3.1-r4
 libnftnl-libs-1.1.1-r0
 libnl-1.1.4-r0
@@ -178,7 +178,7 @@ libseccomp-2.3.3-r1
 libseccomp-dev-2.3.3-r1
 libsmartcols-2.32-r0
 libssh2-1.8.0-r3
-libssl1.0-1.0.2p-r0
+libssl1.0-1.0.2q-r0
 libstdc++-6.4.0-r9
 libtasn1-4.13-r0
 libtirpc-1.0.3-r0
@@ -203,7 +203,7 @@ llvm5-dev-5.0.1-r4
 llvm5-libs-5.0.1-r4
 llvm5-static-5.0.1-r4
 lsscsi-0.28-r0
-lua5.3-libs-5.3.4-r5
+lua5.3-libs-5.3.5-r1
 luajit-2.1.0_beta3-r4
 luajit-dev-2.1.0_beta3-r4
 lz4-libs-1.8.2-r0
@@ -236,14 +236,14 @@ npth-1.5-r1
 oniguruma-6.8.2-r0
 open-iscsi-2.0.874-r0
 open-isns-lib-0.97-r3
-open-vm-tools-10.1.15-r2
+open-vm-tools-10.1.15-r3
 openntpd-6.2_p3-r1
-openrc-0.35.5-r4
+openrc-0.35.5-r5
 openssh-keygen-7.7_p1-r3
 openssh-server-7.7_p1-r3
 openssh-server-common-7.7_p1-r3
-openssl-1.0.2p-r0
-openssl-dev-1.0.2p-r0
+openssl-1.0.2q-r0
+openssl-dev-1.0.2q-r0
 opus-1.2.1-r1
 ovmf-0.0.20170624-r0
 p11-kit-0.23.10-r0
@@ -252,7 +252,7 @@ pax-utils-1.2.3-r0
 pcre-8.42-r0
 pcre2-10.31-r0
 pcsc-lite-libs-1.8.23-r1
-perl-5.26.2-r1
+perl-5.26.3-r0
 pigz-2.4-r0
 pinentry-1.1.0-r0
 pixman-0.34.0-r5
@@ -283,10 +283,10 @@ slang-dev-2.3.2-r0
 snappy-1.1.4-r4
 sntpc-0.9-r6
 socat-1.7.3.2-r4
-spice-server-0.14.0-r7
+spice-server-0.14.1-r0
 sqlite-libs-3.24.0-r0
 squashfs-tools-4.3-r4
-ssl_client-1.28.4-r1
+ssl_client-1.28.4-r2
 strace-4.22-r0
 sudo-1.8.23-r2
 swig-3.0.12-r3

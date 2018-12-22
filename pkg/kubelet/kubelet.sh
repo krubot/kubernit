@@ -10,6 +10,7 @@ if [ -f /run/config/kubelet/disabled ] ; then
     echo "kubelet.sh: /run/config/kubelet/disabled file is present, exiting"
     exit 0
 fi
+
 if [ -n "$KUBELET_DISABLED" ] ; then
     echo "kubelet.sh: KUBELET_DISABLED environ variable is set, exiting"
     exit 0
@@ -17,7 +18,7 @@ fi
 
 if [ ! -e /var/lib/cni/.opt.defaults-extracted ] ; then
     mkdir -p /var/lib/cni/bin
-    tar -xzf /root/cni.tgz -C /var/lib/cni/bin
+    tar -xzf /cni.tgz -C /var/lib/cni/bin
     touch /var/lib/cni/.opt.defaults-extracted
 fi
 
@@ -29,16 +30,13 @@ fi
 
 # NFS client setup
 mount -t nfsd nfsd /proc/fs/nfsd
-
 echo 'starting rpcbind...'
 /sbin/rpcbind -w
 echo "Displaying rpcbind status..."
 /sbin/rpcinfo
 /sbin/rpc.statd
-
 echo "Starting NFS in the background..."
 /usr/sbin/rpc.nfsd --debug 8 --no-udp --no-nfs-version 2
-
 echo "Starting Mountd in the background..."
 /usr/sbin/rpc.mountd --debug all --no-udp --no-nfs-version 2
 

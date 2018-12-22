@@ -43,7 +43,6 @@ RUN mkdir -p /out/etc/apk && cp -r /etc/apk/* /out/etc/apk/
 RUN apk add --no-cache --initdb -p /out \
     alpine-baselayout \
     busybox \
-    ca-certificates \
     coreutils \
     curl \
     ebtables \

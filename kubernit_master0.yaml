@@ -187,7 +187,8 @@ files:
   - path: etc/kubeadm/
     directory: true
   - path: etc/sysctl.d/01-kubernetes.conf
-    contents: 'net.ipv4.ip_forward = 1'
+    contents: |
+      net.ipv4.ip_forward = 1
   - path: etc/cni/net.d
     directory: true
   - path: opt/cni/bin
@@ -199,11 +200,15 @@ files:
   - path: etc/kubeadm/init
     contents: "--ignore-preflight-errors all"
   - path: etc/kubeadm/kube-system.init/00-init.yaml
-    source: config/deploy/init.yaml
+    source: config/deploy/kube-system/init.yaml
   - path: etc/kubeadm/kube-system.init/10-network.yaml
-    source: config/deploy/net.yaml
+    source: config/deploy/kube-system/weave.yaml
   - path: etc/kubeadm/kube-system.init/20-helm.yaml
-    source: config/deploy/helm.yaml
+    source: config/deploy/kube-system/helm.yaml
+  - path: etc/kubeadm/kube-system.init/30-ingress.yaml
+    source: config/deploy/ingress/nginx-ingress.yaml
+  - path: etc/kubeadm/kube-system.init/40-certificates.yaml
+    source: config/deploy/certificates/cert-manager.yaml
   - path: etc/kubeadm/kubeadm.yaml
     source: config/master/kubeadm.yaml
   - path: etc/kubelet.sh.conf

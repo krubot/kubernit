@@ -22,7 +22,7 @@ controller:
     pathOverride: ""
   scope:
     enabled: false
-    namespace: ""
+    namespace: "ingress"
   extraArgs: {}
   extraEnvs: []
   kind: DaemonSet
@@ -50,7 +50,7 @@ controller:
   minAvailable: 1
   resources: {}
   autoscaling:
-    enabled: false
+    enabled: true
   customTemplate:
     configMapName: ""
     configMapKey: ""

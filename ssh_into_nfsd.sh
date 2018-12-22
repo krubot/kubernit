@@ -16,4 +16,4 @@ case $(uname -s) in
 	    ijc25/alpine-ssh"
 	;;
 esac
-exec $ssh $sshopts -t root@"$1" ctr --namespace services tasks exec --tty --exec-id ssh-$(hostname)-$$ nfs-server ash -l
+exec $ssh $sshopts -t root@"$1" ctr --namespace services tasks exec --tty --exec-id ssh-$(hostname)-$$ nfsd ash -l

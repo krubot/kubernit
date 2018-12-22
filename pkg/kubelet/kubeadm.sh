@@ -11,11 +11,6 @@ for opt in $(cat /proc/cmdline); do
 	esac
 done
 
-# fix file system is readonly issue
-rm -rf /etc/ca-certificates
-rm -rf /usr/share/ca-certificates
-rm -rf /usr/local/share/ca-certificates
-
 if [ -f /etc/kubeadm/kubeadm.yaml ]; then
     echo Using the configuration from /etc/kubeadm/kubeadm.yaml
 		if [ "$1" == "init" ]; then
@@ -37,8 +32,9 @@ else
 fi
 
 # sorting by basename relies on the dirnames having the same number of directories
-YAML=$(ls -1 /run/config/kube-system.init/*.yaml /etc/kubeadm/kube-system.init/*.yaml 2>/dev/null | sort --field-separator=/ --key=5)
-for i in ${YAML}; do
+NAMESPACES=$(ls -1 /etc/kubeadm/kube-system.init/*.yaml 2>/dev/null | sort --field-separator=/ --key=5 | sed 's|.*/||')
+for namespace in ${NAMESPACES}; do
+		YAML=$(ls -1 /etc/kubeadm/kube-system.init/"$namespace"/*.yaml 2>/dev/null | sort --field-separator=/ --key=5)
     n=$(basename "$i")
     if [ -e "$i" ] ; then
 			if [ ! -s "$i" ] ; then # ignore zero sized files

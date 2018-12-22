@@ -1,9 +1,9 @@
-FROM golang:1.10.3-alpine3.7 AS build
+FROM golang:1.11.1-alpine3.7 AS build
 
 # When changing kubernetes_version remember to also update:
 # - scripts/mk-image-cache-lst and run `make refresh-image-caches` from top-level
 # - pkg/e2e-test/Dockerfile
-ENV kubernetes_version v1.11.0
+ENV kubernetes_version v1.12.0
 ENV cni_version        v0.7.1
 ENV critools_version   v1.11.1
 ENV helm_version       v2.9.1
@@ -96,16 +96,9 @@ RUN ./bin/helm init --client-only
 ## Construct final image
 
 RUN mkdir -p /out/etc/apk && cp -r /etc/apk/* /out/etc/apk/
-#coreutils needed for du -B for disk image checks made by kubelet
-# example: $ du -s -B 1 /var/lib/kubelet/pods/...
-#          du: unrecognized option: B
 RUN apk add --no-cache --initdb -p /out \
-    alpine-baselayout \
-    apk-tools \
     busybox \
-    ca-certificates \
     coreutils \
-    curl \
     ebtables \
     ethtool \
     findutils \
@@ -113,8 +106,6 @@ RUN apk add --no-cache --initdb -p /out \
     iptables \
     musl \
     openssl \
-    openrc \
-    rpcbind \
     socat \
     util-linux \
     nfs-utils \
@@ -124,7 +115,7 @@ RUN cp $GOPATH/src/github.com/kubernetes/kubernetes/_output/bin/kubelet /out/usr
 RUN cp $GOPATH/src/github.com/kubernetes/kubernetes/_output/bin/kubeadm /out/usr/bin/kubeadm
 RUN cp $GOPATH/src/github.com/kubernetes/kubernetes/_output/bin/kubectl /out/usr/bin/kubectl
 
-RUN tar -czf /out/root/cni.tgz -C $GOPATH/github.com/containernetworking/plugins/bin .
+RUN tar -czf /out/cni.tgz -C $GOPATH/github.com/containernetworking/plugins/bin .
 
 RUN cp $GOPATH/bin/crictl /out/usr/bin/crictl
 RUN cp $GOPATH/bin/critest /out/usr/bin/critest

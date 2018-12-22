@@ -1,6 +1,89 @@
 kernel:
   image: linuxkit/kernel:4.14.59
-  cmdline: "console=tty0 ipAddress=192.168.58.11 ipBroadcast=192.167.58.255 ipMask=24"
+  cmdline: "console=tty0 ipAddress=192.168.58.2 ipBroadcast=192.167.58.255 ipMask=24"
+init:
+  - wombat/init:dev
+  - wombat/runc:dev
+  - wombat/containerd:dev
+  - wombat/ca-certificates:dev
+onboot:
+  - name: sysctl
+    image: wombat/sysctl:dev
+    pid: "host"
+    capabilities:
+      - CAP_SYS_ADMIN
+    binds:
+      - /etc/sysctl.d/ipv6.conf:/etc/sysctl.d/ipv6.conf
+      - /etc/hosts:/etc/hosts
+    readonly: false
+  - name: modprobe
+    image: linuxkit/modprobe:v0.6
+    command: ["modprobe", "-v", "nfsd"]
+services:
+  - name: getty
+    image: wombat/getty:dev
+    env:
+     - INSECURE=true
+    cgroupsPath: systemreserved/getty
+    pid: host
+    net: host
+    binds:
+      - /etc/resolv.conf:/etc/resolv.conf
+      - /run:/run
+      - /tmp:/tmp
+      - /etc:/hostroot/etc
+      - /usr/bin/ctr:/usr/bin/ctr
+      - /usr/bin/runc:/usr/bin/runc
+      - /containers:/containers
+      - /var/log:/var/log
+      - /dev:/dev
+      - /sys:/sys
+    capabilities:
+      - all
+  - name: sshd
+    image: wombat/sshd:dev
+    cgroupsPath: systemreserved/sshd
+    pid: host
+    binds:
+      - /root/.ssh:/root/.ssh
+      - /etc/resolv.conf:/etc/resolv.conf
+      - /run:/run
+      - /tmp:/tmp
+      - /etc:/hostroot/etc
+      - /usr/bin/ctr:/usr/bin/ctr
+      - /usr/bin/runc:/usr/bin/runc
+      - /containers:/containers
+      - /var/log:/var/log
+      - /dev:/dev
+      - /sys:/sys
+    capabilities:
+      - all
+  - name: nfs-server
+    image: wombat/nfs-server:dev
+    binds:
+      - /var/run:/var/run
+      - /tmp:/tmp
+    capabilities:
+      - all
+    rootfsPropagation: shared
+    pid: host
+    runtime:
+      mkdir:
+        - /tmp/exports
+        - /var/lib/nfs/statd/sm
+files:
+  - path: etc/sysctl.d/ipv6.conf
+    contents: |
+      net.ipv6.conf.all.disable_ipv6=1
+      net.ipv6.conf.default.disable_ipv6=1
+  - path: root/.ssh/authorized_keys
+    source: ~/.ssh/id_babylon.pub
+    mode: "0600"
+    optional: true
+
+kernel:
+  image: linuxkit/kernel:4.14.59
+  cmdline: "console=tty0 ipAddress=192.168.58.13 ipBroadcast=192.167.58.255 ipMask=24"
 init:
   - wombat/init:dev
   - wombat/runc:dev
@@ -14,11 +97,15 @@ onboot:
       - CAP_SYS_ADMIN
     binds:
       - /etc/sysctl.d/01-kubernetes.conf:/etc/sysctl.d/01-kubernetes.conf
+      - /etc/sysctl.d/02-ipv6.conf:/etc/sysctl.d/02-ipv6.conf
     readonly: false
   - name: sysfs
     image: wombat/sysfs:dev
     net: new
     ipc: new
+  - name: modprobe
+    image: linuxkit/modprobe:v0.6
+    command: ["modprobe", "-v", "nfsd"]
   - name: dhcpcd
     image: wombat/dhcpcd:dev
     binds:
@@ -128,6 +215,19 @@ services:
       - /sys:/sys
     capabilities:
       - all
+  - name: nfsd
+    image: wombat/nfsd:dev
+    binds:
+      - /var/run:/var/run
+      - /tmp:/tmp
+    capabilities:
+      - all
+    rootfsPropagation: shared
+    pid: host
+    runtime:
+      mkdir:
+        - /tmp/exports
+        - /var/lib/nfs/statd/sm
   - name: kubelet
     image: wombat/kubelet:dev
     cgroupsPath: podruntime/kubelet
@@ -189,6 +289,10 @@ files:
   - path: etc/sysctl.d/01-kubernetes.conf
     contents: |
       net.ipv4.ip_forward = 1
+  - path: etc/sysctl.d/02-ipv6.conf
+    contents: |
+      net.ipv6.conf.all.disable_ipv6=1
+      net.ipv6.conf.default.disable_ipv6=1
   - path: etc/cni/net.d
     directory: true
   - path: opt/cni/bin
@@ -205,4 +309,4 @@ files:
     source: config/node/kubeadm.yaml
   - path: etc/kubelet.sh.conf
     contents: |
-      KUBELET_ARGS="--node-ip=192.168.58.11 --node-labels=node-role.kubernetes.io/worker"
+      KUBELET_ARGS="--node-ip=192.168.58.13 --node-labels=node-role.kubernetes.io/storage"
