@@ -3,10 +3,9 @@ FROM golang:1.11.1-alpine3.7 AS build
 # When changing kubernetes_version remember to also update:
 # - scripts/mk-image-cache-lst and run `make refresh-image-caches` from top-level
 # - pkg/e2e-test/Dockerfile
-ENV kubernetes_version v1.12.0
-ENV cni_version        v0.7.1
-ENV critools_version   v1.11.1
-ENV helm_version       v2.9.1
+ENV kubernetes_version v1.13.0
+ENV cni_version        v0.7.4
+ENV critools_version   v1.13.0
 
 RUN apk add -U --no-cache \
   bash \
@@ -21,8 +20,6 @@ RUN apk add -U --no-cache \
   make \
   rsync \
   gcc \
-  glide \
-  mercurial \
   && true
 
 ENV GOPATH=/go PATH=$PATH:/go/bin
@@ -76,23 +73,6 @@ RUN set -e;  \
     git checkout -q $CRITOOLS_COMMIT
 RUN make binaries
 
-### helm
-
-ENV HELM_URL https://github.com/kubernetes/helm.git
-#ENV KUBERNETES_BRANCH pull/NNN/head
-ENV HELM_COMMIT ${helm_version}
-RUN mkdir -p $GOPATH/src/k8s.io && \
-    cd $GOPATH/src/k8s.io && \
-    git clone $HELM_URL helm
-WORKDIR $GOPATH/src/k8s.io/helm
-RUN set -e; \
-    if [ -n "$HELM_BRANCH" ] ; then \
-        git fetch origin "$HELM_BRANCH"; \
-    fi; \
-    git checkout -q $HELM_COMMIT
-RUN glide install && make bootstrap build
-RUN ./bin/helm init --client-only
-
 ## Construct final image
 
 RUN mkdir -p /out/etc/apk && cp -r /etc/apk/* /out/etc/apk/
@@ -120,12 +100,9 @@ RUN tar -czf /out/cni.tgz -C $GOPATH/github.com/containernetworking/plugins/bin 
 RUN cp $GOPATH/bin/crictl /out/usr/bin/crictl
 RUN cp $GOPATH/bin/critest /out/usr/bin/critest
 
-RUN cp $GOPATH/src/k8s.io/helm/bin/helm /out/usr/bin/helm
-
 # Remove apk residuals. We have a read-only rootfs, so apk is of no use.
 RUN rm -rf /out/etc/apk /out/lib/apk /out/var/cache
 
-ADD helm.sh /out/usr/bin/helm.sh
 ADD kubelet.sh /out/usr/bin/kubelet.sh
 ADD kubeadm.sh /kubeadm.sh
 RUN sed -e "s/@KUBERNETES_VERSION@/${kubernetes_version}/g" </kubeadm.sh >/out/usr/bin/kubeadm.sh && chmod +x /out/usr/bin/kubeadm.sh

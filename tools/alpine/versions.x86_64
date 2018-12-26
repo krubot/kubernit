@@ -1,4 +1,4 @@
-# wombat/alpine:be00f0b0f54c798821340916c07cf0657a29f712-amd64
+# wombat/alpine:672ae469c84b05ccb44dfd1a73ab4da69e2fa063-amd64
 # automatically generated list of installed packages
 abuild-3.2.0-r0
 alpine-baselayout-3.1.0-r0
@@ -86,7 +86,7 @@ gmp-6.1.2-r1
 gmp-dev-6.1.2-r1
 gnupg-2.2.8-r0
 gnutls-3.6.2-r0
-go-1.10.5-r0
+go-1.10.7-r0
 grep-3.1-r2
 guile-2.0.14-r0
 guile-libs-2.0.14-r0
@@ -191,7 +191,7 @@ libusb-1.0.22-r0
 libuuid-2.32-r0
 libuv-1.20.2-r0
 libverto-0.3.0-r1
-libwbclient-4.8.4-r0
+libwbclient-4.8.8-r0
 libxau-1.0.8-r2
 libxcb-1.13-r2
 libxdmcp-1.1.2-r4

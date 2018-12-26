@@ -67,8 +67,67 @@ onboot:
     ipc: new
   - name: bridge
     image: busybox:latest
+    command:
+      - "/bin/sh"
+      - "-c"
+      - |
+        set -e
+        field() {
+            local f=$1
+            local d=$2
+            if [ -r "/run/config/cni.bridge/$f" ] ; then
+                cat "/run/config/cni.bridge/$f"
+            else
+                echo -e "\"$d\"\\n"
+            fi
+        }
+        subnet="$(field subnet '10.1.0.0/16')"
+        gateway="$(field gateway '10.1.0.1')"
+        ns="$(field ns '10.1.0.1')"
+        cat <<EOF >/var/lib/cni/conf/10-default.conflist
+        {
+          "cniVersion": "0.3.1",
+          "name": "default",
+          "plugins": [
+            {
+              "type": "bridge",
+              "bridge": "cni0",
+              "isDefaultGateway": true,
+              "ipMasq": true,
+              "hairpinMode": true,
+              "ipam": {
+                "type": "host-local",
+                "subnet": $subnet,
+                "gateway": $gateway
+              },
+              "dns": {
+                "nameservers": [$ns]
+              }
+            },
+            {
+              "type": "portmap",
+              "capabilities": {
+                "portMappings": true
+              },
+              "snat": true
+            }
+          ]
+        }
+        EOF
+        cat <<EOF >/var/lib/cni/conf/99-loopback.conf
+        {
+          "cniVersion": "0.2.0",
+          "type": "loopback"
+        }
+        EOF
+        if [ -r "/run/config/cni.bridge/debug-show-configs" ] ; then
+            grep . /var/lib/cni/conf/*.conf /var/lib/cni/conf/*.conflist
+        fi
     runtime:
       mkdir: ["/var/lib/cni/conf","/var/lib/cni/bin"]
+    binds:
+      - /var/lib:/var/lib
+      - /run/config:/run/config
 services:
   - name: getty
     image: wombat/getty:dev
@@ -199,16 +258,12 @@ files:
     optional: true
   - path: etc/kubeadm/init
     contents: "--ignore-preflight-errors all"
-  - path: etc/kubeadm/kube-system.init/00-init.yaml
-    source: config/deploy/kube-system/init.yaml
-  - path: etc/kubeadm/kube-system.init/10-network.yaml
-    source: config/deploy/kube-system/weave.yaml
-  - path: etc/kubeadm/kube-system.init/20-helm.yaml
-    source: config/deploy/kube-system/helm.yaml
-  - path: etc/kubeadm/kube-system.init/30-ingress.yaml
-    source: config/deploy/ingress/nginx-ingress.yaml
-  - path: etc/kubeadm/kube-system.init/40-certificates.yaml
-    source: config/deploy/certificates/cert-manager.yaml
+  - path: etc/kubeadm/kube-system.init/00-network.yaml
+    source: config/init/weave.yaml
+  - path: etc/kubeadm/kube-system.init/10-helm.yaml
+    source: config/init/helm.yaml
+  - path: etc/kubeadm/kube-system.init/20-flux.yaml
+    source: config/init/flux.yaml
   - path: etc/kubeadm/kubeadm.yaml
     source: config/master/kubeadm.yaml
   - path: etc/kubelet.sh.conf

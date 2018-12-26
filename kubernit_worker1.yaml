@@ -202,7 +202,7 @@ files:
   - path: etc/kubeadm/join
     contents: ""
   - path: etc/kubeadm/kubeadm.yaml
-    source: config/node/kubeadm.yaml
+    source: config/worker/kubeadm.yaml
   - path: etc/kubelet.sh.conf
     contents: |
       KUBELET_ARGS="--node-ip=192.168.58.12 --node-labels=node-role.kubernetes.io/worker"

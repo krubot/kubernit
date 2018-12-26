@@ -1,0 +1,350 @@
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: flux-git-deploy
+    type: Opaque
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: flux-kube-config
+    data:
+      config: |
+        apiVersion: v1
+        clusters: []
+        contexts:
+        - context:
+            cluster: ""
+            namespace: default
+            user: ""
+          name: default
+        current-context: default
+        kind: Config
+        preferences: {}
+        users: []
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: flux-operator
+      labels:
+        app: flux
+  - apiVersion: apiextensions.k8s.io/v1beta1
+    kind: CustomResourceDefinition
+    metadata:
+      name: helmreleases.flux.weave.works
+      labels:
+        app: flux
+      annotations:
+        "helm.sh/resource-policy": keep
+    spec:
+      group: flux.weave.works
+      names:
+        kind: HelmRelease
+        listKind: HelmReleaseList
+        plural: helmreleases
+        shortNames:
+        - hr
+      scope: Namespaced
+      version: v1beta1
+      versions:
+        - name: v1beta1
+          served: true
+          storage: true
+      validation:
+        openAPIV3Schema:
+          properties:
+            spec:
+              required: ['values', 'chart']
+              properties:
+                releaseName:
+                  type: string
+                  pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+                timeout:
+                  type: integer
+                  format: int64
+                valueFileSecrets:
+                  type: array
+                  items:
+                    type: object
+                    required: ['name']
+                    properties:
+                      name:
+                        type: string
+                values:
+                  type: object
+                chart:
+                  oneOf:
+                  - required: ['git', 'path']
+                    properties:
+                      git:
+                        type: string
+                        format: git # not defined by OAS
+                      path:
+                        type: string
+                      ref:
+                        type: string
+                  - required: ['repository', 'name', 'version']
+                    properties:
+                      repository:
+                        type: string
+                        format: url # not defined by OAS
+                      name:
+                        type: string
+                      version:
+                        type: string
+                        format: semver # not defined by OAS
+                      chartPullSecret:
+                        properties:
+                          name:
+                            type: string
+  - apiVersion: apiextensions.k8s.io/v1beta1
+    kind: CustomResourceDefinition
+    metadata:
+      name: fluxhelmreleases.helm.integrations.flux.weave.works
+      labels:
+        app: flux
+      annotations:
+        "helm.sh/resource-policy": keep
+    spec:
+      group: helm.integrations.flux.weave.works
+      names:
+        kind: FluxHelmRelease
+        listKind: FluxHelmReleaseList
+        plural: fluxhelmreleases
+        shortNames:
+        - fhr
+      scope: Namespaced
+      version: v1alpha2
+      versions:
+        - name: v1alpha2
+          served: true
+          storage: true
+      validation:
+        openAPIV3Schema:
+          properties:
+            spec:
+              required:
+                - chartGitPath
+                - values
+              properties:
+                releaseName:
+                  type: string
+                  pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+                chartGitPath:
+                  type: string
+                values:
+                  type: object
+                valueFileSecrets:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+  - apiVersion: rbac.authorization.k8s.io/v1beta1
+    kind: ClusterRole
+    metadata:
+      name: flux
+      labels:
+        app: flux
+    rules:
+      - apiGroups:
+          - '*'
+        resources:
+          - '*'
+        verbs:
+          - '*'
+      - nonResourceURLs:
+          - '*'
+        verbs:
+          - '*'
+  - apiVersion: rbac.authorization.k8s.io/v1beta1
+    kind: ClusterRoleBinding
+    metadata:
+      name: flux
+      labels:
+        app: flux
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: flux
+    subjects:
+      - name: flux-operator
+        namespace: "preprod"
+        kind: ServiceAccount
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: flux
+      labels:
+        app: flux
+    spec:
+      type: ClusterIP
+      ports:
+        - port: 3030
+          targetPort: http
+          protocol: TCP
+          name: http
+      selector:
+        app: flux
+  - apiVersion: apps/v1beta2
+    kind: Deployment
+    metadata:
+      name: flux
+      labels:
+        app: flux
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: flux
+      template:
+        metadata:
+          annotations:
+            prometheus.io.scrape: "true"
+          labels:
+            app: flux
+        spec:
+          serviceAccountName: flux-operator
+          volumes:
+          - name: kubedir
+            configMap:
+              name: flux-kube-config
+          - name: git-key
+            secret:
+              secretName: flux-git-deploy
+              defaultMode: 0400
+          - name: git-keygen
+            emptyDir:
+              medium: Memory
+          containers:
+            - name: flux
+              image: "quay.io/weaveworks/flux:1.8.2"
+              imagePullPolicy: IfNotPresent
+              ports:
+              - name: http
+                containerPort: 3030
+                protocol: TCP
+              volumeMounts:
+              - name: kubedir
+                mountPath: /root/.kubectl
+              - name: git-key
+                mountPath: /etc/fluxd/ssh
+                readOnly: true
+              - name: git-keygen
+                mountPath: /var/fluxd/keygen
+              env:
+              - name: KUBECONFIG
+                value: /root/.kubectl/config
+              args:
+              - --ssh-keygen-dir=/var/fluxd/keygen
+              - --k8s-secret-name=flux-git-deploy
+              - --memcached-hostname=flux-memcached
+              - --git-url=ssh://git@github.com/krubot/kubernit.git
+              - --git-branch=master
+              - --git-path=services
+              - --git-user=Weave Flux
+              - --git-email=support@weave.works
+              - --git-set-author=false
+              - --git-poll-interval=5m
+              - --git-timeout=20s
+              - --sync-interval=5m
+              - --git-ci-skip=false
+              - --registry-poll-interval=5m
+              - --registry-rps=200
+              - --registry-burst=125
+              - --registry-trace=false
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+  - apiVersion: apps/v1beta2
+    kind: Deployment
+    metadata:
+      name: flux-helm-operator
+      labels:
+        app: flux-helm-operator
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: flux-helm-operator
+      template:
+        metadata:
+          annotations:
+            prometheus.io.scrape: "true"
+          labels:
+            app: flux-helm-operator
+        spec:
+          serviceAccountName: flux-operator
+          volumes:
+          - name: git-key
+            secret:
+              secretName: flux-git-deploy
+              defaultMode: 0400
+          containers:
+          - name: flux-helm-operator
+            image: "quay.io/weaveworks/helm-operator:0.5.2"
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - name: git-key
+              mountPath: /etc/fluxd/ssh
+              readOnly: true
+            args:
+            - --git-timeout=20s
+            - --charts-sync-interval=3m
+            - --update-chart-deps=true
+            - --log-release-diffs=false
+            - --tiller-namespace=kube-system
+            resources:
+              requests:
+                cpu: 50m
+                memory: 64Mi
+  - apiVersion: apps/v1beta2
+    kind: Deployment
+    metadata:
+      name: flux-memcached
+      labels:
+        app: flux-memcached
+    spec:
+      replicas: 1
+      strategy:
+        type: Recreate
+      selector:
+        matchLabels:
+          app: flux-memcached
+      template:
+        metadata:
+          labels:
+            app: flux-memcached
+        spec:
+          containers:
+          - name: memcached
+            image: memcached:1.4.25
+            imagePullPolicy: IfNotPresent
+            args:
+            - -m 64    # Maximum memory to use, in megabytes. 64MB is default.
+            - -p 11211    # Default port, but being explicit is nice.
+            - -I 1m #  Maximum size for one item
+            ports:
+            - name: memcached
+              containerPort: 11211
+            resources:
+              {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: flux-memcached
+      labels:
+        app: flux-memcached
+    spec:
+      clusterIP: None
+      ports:
+        - port: 11211
+          targetPort: memcached
+          protocol: TCP
+          name: memcached
+      selector:
+        app: flux-memcached

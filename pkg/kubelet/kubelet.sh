@@ -76,7 +76,6 @@ exec kubelet --kubeconfig=/etc/kubernetes/kubelet.conf \
 	      --network-plugin=cni \
 	      --cni-conf-dir=/etc/cni/net.d \
 	      --cni-bin-dir=/opt/cni/bin \
-	      --cadvisor-port=0 \
 	      --kube-reserved-cgroup=podruntime \
 	      --system-reserved-cgroup=systemreserved \
 	      --cgroup-root=kubepods \
