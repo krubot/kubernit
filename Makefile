@@ -12,10 +12,28 @@ base:
 $(PKG):
 	@docker build -t wombat/$@:dev -f pkg/$@/Dockerfile pkg/$@
 
+masters:
+	@echo "Wait 10 seconds for linuxkit to become ready"
+	@sleep 10
+	linuxkit build kubernit_master0.yaml
+
+nodes:
+	@echo "Wait 10 seconds for linuxkit to become ready"
+	@sleep 10
+	linuxkit build kubernit_worker0.yaml
+	linuxkit build kubernit_worker1.yaml
+
+storage:
+	@echo "Wait 10 seconds for linuxkit to become ready"
+	@sleep 10
+	linuxkit build kubernit_storage0.yaml
+
+kernel: masters nodes storage
+
 iso-masters:
 	@echo "Wait 10 seconds for linuxkit to become ready"
 	@sleep 10
-	linuxkit build -format iso-bios kubernit_master0.yaml
+	linuxkit build kubernit_master0.yaml
 
 iso-nodes:
 	@echo "Wait 10 seconds for linuxkit to become ready"
