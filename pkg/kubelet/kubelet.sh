@@ -50,7 +50,7 @@ elif [ -d /etc/kubeadm ] ; then
 	     kubeadm.sh init --skip-token-print $(cat /etc/kubeadm/init) &
     elif [ -f /etc/kubeadm/join ] ; then
 	     echo "kubelet.sh: joining cluster with metadata \"$(cat /etc/kubeadm/join)\""
-       kubeadm.sh join $(cat /etc/kubeadm/init)
+       kubeadm.sh join $(cat /etc/kubeadm/join)
 	     await=/etc/kubernetes/bootstrap-kubelet.conf
     fi
 fi

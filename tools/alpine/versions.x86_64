@@ -1,4 +1,4 @@
-# wombat/alpine:672ae469c84b05ccb44dfd1a73ab4da69e2fa063-amd64
+# wombat/alpine:b8fb06c569d855b20cabf218c31cee7cb8754361-amd64
 # automatically generated list of installed packages
 abuild-3.2.0-r0
 alpine-baselayout-3.1.0-r0
@@ -24,8 +24,8 @@ btrfs-progs-4.17-r1
 btrfs-progs-dev-4.17-r1
 btrfs-progs-libs-4.17-r1
 build-base-0.5-r1
-busybox-1.28.4-r2
-busybox-initscripts-3.1-r3
+busybox-1.28.4-r3
+busybox-initscripts-3.1-r4
 bzip2-1.0.6-r6
 ca-certificates-20171114-r3
 cdrkit-1.1.11-r2
@@ -86,7 +86,7 @@ gmp-6.1.2-r1
 gmp-dev-6.1.2-r1
 gnupg-2.2.8-r0
 gnutls-3.6.2-r0
-go-1.10.7-r0
+go-1.10.8-r0
 grep-3.1-r2
 guile-2.0.14-r0
 guile-libs-2.0.14-r0
@@ -108,9 +108,9 @@ keyutils-libs-1.5.10-r0
 kmod-24-r1
 kmod-openrc-24-r1
 krb5-conf-1.0-r1
-krb5-dev-1.15.3-r0
-krb5-libs-1.15.3-r0
-krb5-server-ldap-1.15.3-r0
+krb5-dev-1.15.4-r0
+krb5-libs-1.15.4-r0
+krb5-server-ldap-1.15.4-r0
 lddtree-1.26-r1
 libacl-2.2.52-r5
 libaio-0.3.111-r0
@@ -131,7 +131,7 @@ libcap-2.25-r1
 libcap-ng-0.7.9-r0
 libcap-ng-dev-0.7.9-r0
 libcom_err-1.44.2-r0
-libcrypto1.0-1.0.2q-r0
+libcrypto1.0-1.0.2r-r0
 libcurl-7.61.1-r1
 libdrm-2.4.92-r0
 libedit-20170329.3.1-r3
@@ -152,7 +152,7 @@ libgpg-error-1.30-r0
 libintl-0.19.8.1-r2
 libisoburn-1.4.8-r0
 libisofs-1.4.8-r0
-libjpeg-turbo-1.5.3-r3
+libjpeg-turbo-1.5.3-r4
 libksba-1.3.5-r0
 libldap-2.4.46-r0
 libltdl-2.4.6-r5
@@ -168,17 +168,17 @@ libogg-1.3.3-r2
 libpcap-1.8.1-r1
 libpciaccess-0.13.5-r1
 libpng-1.6.34-r1
-libressl-2.7.4-r0
-libressl-dev-2.7.4-r0
-libressl2.7-libcrypto-2.7.4-r0
-libressl2.7-libssl-2.7.4-r0
-libressl2.7-libtls-2.7.4-r0
-libsasl-2.1.26-r13
+libressl-2.7.5-r0
+libressl-dev-2.7.5-r0
+libressl2.7-libcrypto-2.7.5-r0
+libressl2.7-libssl-2.7.5-r0
+libressl2.7-libtls-2.7.5-r0
+libsasl-2.1.26-r14
 libseccomp-2.3.3-r1
 libseccomp-dev-2.3.3-r1
 libsmartcols-2.32-r0
 libssh2-1.8.0-r3
-libssl1.0-1.0.2q-r0
+libssl1.0-1.0.2r-r0
 libstdc++-6.4.0-r9
 libtasn1-4.13-r0
 libtirpc-1.0.3-r0
@@ -239,11 +239,11 @@ open-isns-lib-0.97-r3
 open-vm-tools-10.1.15-r3
 openntpd-6.2_p3-r1
 openrc-0.35.5-r5
-openssh-keygen-7.7_p1-r3
-openssh-server-7.7_p1-r3
-openssh-server-common-7.7_p1-r3
-openssl-1.0.2q-r0
-openssl-dev-1.0.2q-r0
+openssh-keygen-7.7_p1-r4
+openssh-server-7.7_p1-r4
+openssh-server-common-7.7_p1-r4
+openssl-1.0.2r-r0
+openssl-dev-1.0.2r-r0
 opus-1.2.1-r1
 ovmf-0.0.20170624-r0
 p11-kit-0.23.10-r0
@@ -283,16 +283,16 @@ slang-dev-2.3.2-r0
 snappy-1.1.4-r4
 sntpc-0.9-r6
 socat-1.7.3.2-r4
-spice-server-0.14.1-r0
-sqlite-libs-3.24.0-r0
+spice-server-0.14.1-r1
+sqlite-libs-3.25.3-r0
 squashfs-tools-4.3-r4
-ssl_client-1.28.4-r2
+ssl_client-1.28.4-r3
 strace-4.22-r0
 sudo-1.8.23-r2
 swig-3.0.12-r3
 syslinux-6.04_pre1-r1
 talloc-2.1.12-r0
-tar-1.30-r0
+tar-1.32-r0
 tcl-8.6.7-r0
 tcpdump-4.9.2-r3
 tini-0.18.0-r0

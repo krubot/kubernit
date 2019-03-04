@@ -17,7 +17,7 @@ masters:
 	@sleep 10
 	linuxkit build kubernit_master0.yaml
 
-nodes:
+workers:
 	@echo "Wait 10 seconds for linuxkit to become ready"
 	@sleep 10
 	linuxkit build kubernit_worker0.yaml
@@ -28,14 +28,14 @@ storage:
 	@sleep 10
 	linuxkit build kubernit_storage0.yaml
 
-kernel: masters nodes storage
+kernel: masters workers storage
 
 iso-masters:
 	@echo "Wait 10 seconds for linuxkit to become ready"
 	@sleep 10
-	linuxkit build kubernit_master0.yaml
+	linuxkit build -format iso-bios kubernit_master0.yaml
 
-iso-nodes:
+iso-workers:
 	@echo "Wait 10 seconds for linuxkit to become ready"
 	@sleep 10
 	linuxkit build -format iso-bios kubernit_worker0.yaml
@@ -46,14 +46,14 @@ iso-storage:
 	@sleep 10
 	linuxkit build -format iso-bios kubernit_storage0.yaml
 
-iso: iso-masters iso-nodes iso-storage
+iso: iso-masters iso-workers iso-storage
 
 qemu-masters:
 	@echo "Wait 10 seconds for linuxkit to become ready"
 	@sleep 10
 	linuxkit build -format qcow2-bios kubernit_master0.yaml
 
-qemu-nodes:
+qemu-workers:
 	@echo "Wait 10 seconds for linuxkit to become ready"
 	@sleep 10
 	linuxkit build -format qcow2-bios kubernit_worker0.yaml
@@ -64,4 +64,4 @@ qemu-storage:
 	@sleep 10
 	linuxkit build -format qcow2-bios kubernit_storage0.yaml
 
-qemu: qemu-masters qemu-nodes qemu-storage
+qemu: qemu-masters qemu-workers qemu-storage

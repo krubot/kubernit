@@ -32,22 +32,21 @@ else
 fi
 
 # sorting by basename relies on the dirnames having the same number of directories
-NAMESPACES=$(ls -1 /etc/kubeadm/kube-system.init/*.yaml 2>/dev/null | sort --field-separator=/ --key=5 | sed 's|.*/||')
-for namespace in ${NAMESPACES}; do
-		YAML=$(ls -1 /etc/kubeadm/kube-system.init/"$namespace"/*.yaml 2>/dev/null | sort --field-separator=/ --key=5)
+YAML=$(ls -1 /run/config/kube-system.init/*.yaml /etc/kubeadm/kube-system.init/*.yaml 2>/dev/null | sort --field-separator=/ --key=5)
+for i in ${YAML}; do
     n=$(basename "$i")
     if [ -e "$i" ] ; then
-			if [ ! -s "$i" ] ; then # ignore zero sized files
-	    	echo "Ignoring zero size file $n"
-	    	continue
-			fi
-			echo "Applying $n"
-			if ! kubectl create -n kube-system -f "$i" ; then
-	    	touch /var/lib/kubeadm/.kubeadm-init.sh-kube-system.init-failed
-	    	touch /var/lib/kubeadm/.kubeadm-init.sh-kube-system.init-"$n"-failed
-	    	echo "Failed to apply $n"
-	    	continue
-			fi
+	      if [ ! -s "$i" ] ; then # ignore zero sized files
+	          echo "Ignoring zero size file $n"
+	          continue
+	      fi
+	      echo "Applying $n"
+	      if ! kubectl create -n kube-system -f "$i" ; then
+	          touch /var/lib/kubeadm/.kubeadm-init.sh-kube-system.init-failed
+	          touch /var/lib/kubeadm/.kubeadm-init.sh-kube-system.init-"$n"-failed
+	          echo "Failed to apply $n"
+	          continue
+	      fi
     fi
 done
 if [ -f /run/config/kubeadm/untaint-master ] ; then
