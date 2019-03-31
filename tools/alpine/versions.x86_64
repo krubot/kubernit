@@ -1,4 +1,4 @@
-# wombat/alpine:b8fb06c569d855b20cabf218c31cee7cb8754361-amd64
+# wombat/alpine:b2954b69c6ea0622d0bbaae3eee1f1eec64bcba1-amd64
 # automatically generated list of installed packages
 abuild-3.2.0-r0
 alpine-baselayout-3.1.0-r0
@@ -40,7 +40,7 @@ cmake-bash-completion-3.11.1-r2
 coreutils-8.29-r2
 cryptsetup-2.0.2-r3
 cryptsetup-libs-2.0.2-r3
-curl-7.61.1-r1
+curl-7.61.1-r2
 db-5.3.28-r0
 dbus-libs-1.10.24-r1
 device-mapper-libs-2.02.178-r0
@@ -132,7 +132,7 @@ libcap-ng-0.7.9-r0
 libcap-ng-dev-0.7.9-r0
 libcom_err-1.44.2-r0
 libcrypto1.0-1.0.2r-r0
-libcurl-7.61.1-r1
+libcurl-7.61.1-r2
 libdrm-2.4.92-r0
 libedit-20170329.3.1-r3
 libedit-dev-20170329.3.1-r3
@@ -177,7 +177,7 @@ libsasl-2.1.26-r14
 libseccomp-2.3.3-r1
 libseccomp-dev-2.3.3-r1
 libsmartcols-2.32-r0
-libssh2-1.8.0-r3
+libssh2-1.8.2-r0
 libssl1.0-1.0.2r-r0
 libstdc++-6.4.0-r9
 libtasn1-4.13-r0

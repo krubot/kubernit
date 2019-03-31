@@ -260,9 +260,11 @@ files:
     contents: "--ignore-preflight-errors all"
   - path: etc/kubeadm/kube-system.init/00-network.yaml
     source: config/init/weave.yaml
-  - path: etc/kubeadm/kube-system.init/10-helm.yaml
+  - path: etc/kubeadm/kube-system.init/10-ingress.yaml
+    source: config/init/ingress.yaml
+  - path: etc/kubeadm/kube-system.init/20-helm.yaml
     source: config/init/helm.yaml
-  - path: etc/kubeadm/kube-system.init/20-flux.yaml
+  - path: etc/kubeadm/kube-system.init/30-flux.yaml
     source: config/init/flux.yaml
   - path: etc/kubeadm/kubeadm.yaml
     source: config/master/kubeadm.yaml

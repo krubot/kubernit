@@ -314,7 +314,7 @@ func doHostname() {
 	}
 
 	mac = strings.Replace(mac, ":", "", -1)
-	if err := unix.Sethostname([]byte("linuxkit-" + mac)); err != nil {
+	if err := unix.Sethostname([]byte("kubernit-" + mac)); err != nil {
 		log.Printf("Setting hostname failed: %v", err)
 	}
 }
