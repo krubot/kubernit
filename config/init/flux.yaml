@@ -1,5 +1,4 @@
 ---
-# Source: flux/templates/kube.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -20,27 +19,19 @@ data:
     users: []
 
 ---
-# Source: flux/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: flux
   labels:
     app: flux
-    chart: flux-0.6.3
-    release: RELEASE-NAME
-    heritage: Tiller
 ---
-# Source: flux/templates/rbac.yaml
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
   name: flux
   labels:
     app: flux
-    chart: flux-0.6.3
-    release: RELEASE-NAME
-    heritage: Tiller
 rules:
   - apiGroups:
       - '*'
@@ -59,9 +50,6 @@ metadata:
   name: flux
   labels:
     app: flux
-    chart: flux-0.6.3
-    release: RELEASE-NAME
-    heritage: Tiller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -71,16 +59,12 @@ subjects:
     namespace: "default"
     kind: ServiceAccount
 ---
-# Source: flux/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: flux
   labels:
     app: flux
-    chart: flux-0.6.3
-    release: RELEASE-NAME
-    heritage: Tiller
 spec:
   type: ClusterIP
   ports:
@@ -90,41 +74,38 @@ spec:
       name: http
   selector:
     app: flux
-    release: RELEASE-NAME
 
 ---
-# Source: flux/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flux
   labels:
     app: flux
-    chart: flux-0.6.3
-    release: RELEASE-NAME
-    heritage: Tiller
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: flux
-      release: RELEASE-NAME
   template:
     metadata:
       annotations:
         prometheus.io.scrape: "true"
       labels:
         app: flux
-        release: RELEASE-NAME
     spec:
       serviceAccountName: flux
       volumes:
       - name: kubedir
         configMap:
           name: flux-kube-config
+      - name: sshdir
+        configMap:
+          name: flux-ssh-config
+          defaultMode: 0600
       - name: git-key
         secret:
-          secretName: flux-ssh
+          secretName: flux-git-deploy
           defaultMode: 0400
       - name: git-keygen
         emptyDir:
@@ -140,6 +121,9 @@ spec:
           volumeMounts:
           - name: kubedir
             mountPath: /root/.kubectl
+          - name: sshdir
+            mountPath: /root/.ssh
+            readOnly: true
           - name: git-key
             mountPath: /etc/fluxd/ssh
             readOnly: true
@@ -152,15 +136,14 @@ spec:
           - --ssh-keygen-dir=/var/fluxd/keygen
           - --k8s-secret-name=flux-ssh
           - --memcached-hostname=flux-memcached
-          - --memcached-service=
-          - --git-url=ssh://git@github.com/krubot/kubernit
+          - --memcached-service=flux-memcached.kube-system.svc.cluster.local
+          - --git-url=ssh://git@github.com/krubot/kubernit.git
           - --git-branch=master
-          - --git-path=
           - --git-user=Weave Flux
           - --git-email=support@weave.works
           - --git-set-author=false
           - --git-poll-interval=5m
-          - --git-timeout=20s
+          - --git-timeout=200s
           - --sync-interval=5m
           - --git-ci-skip=false
           - --registry-poll-interval=5m
@@ -174,16 +157,12 @@ spec:
 
 
 ---
-# Source: flux/templates/memcached.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flux-memcached
   labels:
     app: flux-memcached
-    chart: flux-0.6.3
-    release: RELEASE-NAME
-    heritage: Tiller
 spec:
   replicas: 1
   strategy:
@@ -191,26 +170,23 @@ spec:
   selector:
     matchLabels:
       app: flux-memcached
-      release: RELEASE-NAME
   template:
     metadata:
       labels:
         app: flux-memcached
-        release: RELEASE-NAME
     spec:
       containers:
       - name: memcached
         image: memcached:1.4.25
         imagePullPolicy: IfNotPresent
         args:
-        - -m 128    # Maximum memory to use, in megabytes. 64MB is default.
-        - -p 11211    # Default port, but being explicit is nice.
-        - -I 5m #  Maximum size for one item
+        - -m 128
+        - -p 11211
+        - -I 5m
+        - -vv
         ports:
         - name: memcached
           containerPort: 11211
-        resources:
-          {}
 
 ---
 apiVersion: v1
@@ -219,9 +195,6 @@ metadata:
   name: flux-memcached
   labels:
     app: flux-memcached
-    chart: flux-0.6.3
-    release: RELEASE-NAME
-    heritage: Tiller
 spec:
   ports:
     - port: 11211
@@ -230,4 +203,22 @@ spec:
       name: memcached
   selector:
     app: flux-memcached
-    release: RELEASE-NAME
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flux-ssh-config
+data:
+  known_hosts: |
+    # github.com:22 SSH-2.0-babeld-51223baf
+    github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+    # github.com:22 SSH-2.0-babeld-51223baf
+    # github.com:22 SSH-2.0-babeld-51223baf
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: flux-git-deploy
+type: Opaque
