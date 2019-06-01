@@ -7,37 +7,27 @@ items:
       name: nginx-ingress
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        heritage: Tiller
-        release: RELEASE-NAME
     spec:
       allowedCapabilities:
         - NET_BIND_SERVICE
       privileged: false
       allowPrivilegeEscalation: true
-      # Allow core volume types.
       volumes:
         - 'configMap'
-        #- 'emptyDir'
-        #- 'projected'
         - 'secret'
-        #- 'downwardAPI'
       hostNetwork: true
       hostIPC: false
       hostPID: false
       runAsUser:
-        # Require the container to run without root privileges.
         rule: 'MustRunAsNonRoot'
       supplementalGroups:
         rule: 'MustRunAs'
         ranges:
-          # Forbid adding the root group.
           - min: 1
             max: 65535
       fsGroup:
         rule: 'MustRunAs'
         ranges:
-          # Forbid adding the root group.
           - min: 1
             max: 65535
       readOnlyRootFilesystem: false
@@ -51,10 +41,7 @@ items:
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
         component: "controller"
-        heritage: Tiller
-        release: RELEASE-NAME
       name: nginx-ingress-controller
     data:
       enable-vts-status: "true"
@@ -63,18 +50,12 @@ items:
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        heritage: Tiller
-        release: RELEASE-NAME
       name: ingress
   - apiVersion: rbac.authorization.k8s.io/v1beta1
     kind: ClusterRole
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        heritage: Tiller
-        release: RELEASE-NAME
       name: nginx-ingress
     rules:
       - apiGroups:
@@ -129,9 +110,6 @@ items:
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        heritage: Tiller
-        release: RELEASE-NAME
       name: nginx-ingress
     roleRef:
       apiGroup: rbac.authorization.k8s.io
@@ -146,9 +124,6 @@ items:
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        heritage: Tiller
-        release: RELEASE-NAME
       name: nginx-ingress
     rules:
       - apiGroups:
@@ -234,9 +209,6 @@ items:
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        heritage: Tiller
-        release: RELEASE-NAME
       name: nginx-ingress
     roleRef:
       apiGroup: rbac.authorization.k8s.io
@@ -251,10 +223,7 @@ items:
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        component: "controller"
-        heritage: Tiller
-        release: RELEASE-NAME
+        component: controller
       name: nginx-ingress-controller-metrics
     spec:
       clusterIP: ""
@@ -264,18 +233,14 @@ items:
           targetPort: metrics
       selector:
         app: nginx-ingress
-        component: "controller"
-        release: RELEASE-NAME
+        component: controller
       type: "ClusterIP"
   - apiVersion: v1
     kind: Service
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        component: "controller"
-        heritage: Tiller
-        release: RELEASE-NAME
+        component: controller
       name: nginx-ingress-controller
     spec:
       clusterIP: ""
@@ -298,10 +263,7 @@ items:
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        component: "controller"
-        heritage: Tiller
-        release: RELEASE-NAME
+        component: controller
       name: nginx-ingress-controller-stats
     spec:
       clusterIP: ""
@@ -311,18 +273,14 @@ items:
           targetPort: stats
       selector:
         app: nginx-ingress
-        component: "controller"
-        release: RELEASE-NAME
+        component: controller
       type: "ClusterIP"
   - apiVersion: v1
     kind: Service
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        component: "default-backend"
-        heritage: Tiller
-        release: RELEASE-NAME
+        component: default-backend
       name: nginx-ingress-default-backend
     spec:
       clusterIP: ""
@@ -333,18 +291,14 @@ items:
           targetPort: http
       selector:
         app: nginx-ingress
-        component: "default-backend"
-        release: RELEASE-NAME
+        component: default-backend
       type: "ClusterIP"
   - apiVersion: extensions/v1beta1
     kind: DaemonSet
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        component: "controller"
-        heritage: Tiller
-        release: RELEASE-NAME
+        component: controller
       name: nginx-ingress-controller
     spec:
       revisionHistoryLimit: 10
@@ -355,8 +309,7 @@ items:
           annotations:
           labels:
             app: nginx-ingress
-            component: "controller"
-            release: RELEASE-NAME
+            component: controller
         spec:
           dnsPolicy: ClusterFirst
           containers:
@@ -420,10 +373,7 @@ items:
     metadata:
       labels:
         app: nginx-ingress
-        chart: nginx-ingress-1.3.1
-        component: "default-backend"
-        heritage: Tiller
-        release: RELEASE-NAME
+        component: default-backend
       name: nginx-ingress-default-backend
     spec:
       replicas: 1
@@ -432,8 +382,7 @@ items:
         metadata:
           labels:
             app: nginx-ingress
-            component: "default-backend"
-            release: RELEASE-NAME
+            component: default-backend
         spec:
           containers:
             - name: nginx-ingress-default-backend

@@ -1,4 +1,4 @@
-FROM wombat/alpine:v0.1 AS mirror
+FROM kubernit/alpine:v0.1 AS mirror
 
 RUN apk add --no-cache go musl-dev linux-headers
 ENV GOPATH=/go PATH=$PATH:/go/bin

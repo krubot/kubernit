@@ -1,4 +1,4 @@
-FROM wombat/alpine:v0.1 AS mirror
+FROM kubernit/alpine:v0.1 AS mirror
 RUN mkdir -p /out/etc/apk && cp -r /etc/apk/* /out/etc/apk/
 RUN apk add --no-cache --initdb -p /out \
     alpine-baselayout \

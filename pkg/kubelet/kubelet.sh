@@ -28,18 +28,6 @@ if [ ! -e /var/lib/cni/.cni.conf-extracted ] && [ -d /run/config/cni ] ; then
     touch /var/lib/cni/.cni.configs-extracted
 fi
 
-# NFS client setup
-mount -t nfsd nfsd /proc/fs/nfsd
-echo 'starting rpcbind...'
-/sbin/rpcbind -w
-echo "Displaying rpcbind status..."
-/sbin/rpcinfo
-/sbin/rpc.statd
-echo "Starting NFS in the background..."
-/usr/sbin/rpc.nfsd --debug 8 --no-udp --no-nfs-version 2
-echo "Starting Mountd in the background..."
-/usr/sbin/rpc.mountd --debug all --no-udp --no-nfs-version 2
-
 await=/etc/kubernetes/kubelet.conf
 
 if [ -f "/etc/kubernetes/kubelet.conf" ] ; then
@@ -63,22 +51,46 @@ done
 
 echo "kubelet.sh: ${await} has arrived" 2>&1
 
+if [ -f "/run/config/kubelet-config.json" ]; then
+    echo "Found kubelet configuration from /run/config/kubelet-config.json"
+else
+    echo "Generate kubelet configuration to /run/config/kubelet-config.json"
+    : ${KUBE_CLUSTER_DNS:='"10.200.0.10"'}
+    cat > /run/config/kubelet-config.json << EOF
+    {
+        "kind": "KubeletConfiguration",
+        "apiVersion": "kubelet.config.k8s.io/v1beta1",
+        "staticPodPath": "/etc/kubernetes/manifests",
+        "clusterDNS": [
+            ${KUBE_CLUSTER_DNS}
+        ],
+        "clusterDomain": "cluster.local",
+        "cgroupsPerQOS": false,
+        "enforceNodeAllocatable": [],
+        "kubeReservedCgroup": "podruntime",
+        "systemReservedCgroup": "systemreserved",
+        "cgroupRoot": "kubepods"
+    }
+EOF
+fi
+
 mkdir -p /etc/kubernetes/manifests
 
-exec kubelet --kubeconfig=/etc/kubernetes/kubelet.conf \
-	      --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf \
-	      --pod-manifest-path=/etc/kubernetes/manifests \
-	      --allow-privileged=true \
-	      --cluster-dns=10.200.0.10 \
-	      --cluster-domain=cluster.local \
-	      --cgroups-per-qos=false \
-	      --enforce-node-allocatable= \
-	      --network-plugin=cni \
-	      --cni-conf-dir=/etc/cni/net.d \
-	      --cni-bin-dir=/opt/cni/bin \
-	      --kube-reserved-cgroup=podruntime \
-	      --system-reserved-cgroup=systemreserved \
-	      --cgroup-root=kubepods \
-        --container-runtime=remote \
-        --container-runtime-endpoint=unix:///run/containerd/containerd.sock \
-	      $KUBELET_ARGS $@
+# If using --cgroups-per-qos then need to use --cgroup-root=/ and not
+# the --cgroup-root=kubepods from below. This can be done at image
+# build time by adding to the service definition:
+#
+#    command:
+#      - /usr/bin/kubelet.sh
+#      - --cgroup-root=/
+#      - --cgroups-per-qos
+exec kubelet \
+          --config=/run/config/kubelet-config.json \
+          --kubeconfig=/etc/kubernetes/kubelet.conf \
+          --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf \
+          --network-plugin=cni \
+          --cni-conf-dir=/etc/cni/net.d \
+          --cni-bin-dir=/opt/cni/bin \
+          --container-runtime=remote \
+          --container-runtime-endpoint=unix:///run/containerd/containerd.sock \
+          $KUBELET_ARGS $@

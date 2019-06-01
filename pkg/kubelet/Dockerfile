@@ -1,11 +1,11 @@
-FROM golang:1.11.1-alpine3.7 AS build
+FROM golang:1.12.1-alpine3.9 AS build
 
 # When changing kubernetes_version remember to also update:
 # - scripts/mk-image-cache-lst and run `make refresh-image-caches` from top-level
 # - pkg/e2e-test/Dockerfile
-ENV kubernetes_version v1.13.0
-ENV cni_version        v0.7.4
-ENV critools_version   v1.13.0
+ENV kubernetes_version v1.14.2
+ENV cni_version        v0.6.0
+ENV critools_version   v1.11.1
 
 RUN apk add -U --no-cache \
   bash \

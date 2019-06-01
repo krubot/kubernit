@@ -1,6 +1,6 @@
 .PHONY: all build vhd pkg
 
-PKG = init containerd runc ca-certificates sysctl sysfs metadata format mount dhcpcd rngd openntpd sshd kubelet getty nfsd
+PKG = init containerd runc ca-certificates sysctl sysfs metadata format mount dhcpcd rngd openntpd sshd kubelet getty nfsd init-wireguard
 
 all: base $(PKG) iso
 
@@ -10,7 +10,7 @@ base:
 	@make -C tools/alpine build
 
 $(PKG):
-	@docker build -t wombat/$@:dev -f pkg/$@/Dockerfile pkg/$@
+	@docker build -t kubernit/$@:dev -f pkg/$@/Dockerfile pkg/$@
 
 masters:
 	@echo "Wait 10 seconds for linuxkit to become ready"
@@ -45,6 +45,11 @@ iso-storage:
 	@echo "Wait 10 seconds for linuxkit to become ready"
 	@sleep 10
 	linuxkit build -format iso-bios kubernit_storage0.yaml
+
+iso-wireguard:
+	@echo "Wait 10 seconds for linuxkit to become ready"
+	@sleep 10
+	linuxkit build -format iso-bios kubernit_wireguard0.yaml
 
 iso: iso-masters iso-workers iso-storage
 
