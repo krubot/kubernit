@@ -1,14 +1,14 @@
 kernel:
-  image: linuxkit/kernel:4.14.59
+  image: linuxkit/kernel:5.1.6
   cmdline: "console=tty0 ipAddress=192.168.58.11 ipBroadcast=192.167.58.255 ipMask=24"
 init:
-  - wombat/init:dev
-  - wombat/runc:dev
-  - wombat/containerd:dev
-  - wombat/ca-certificates:dev
+  - kubernit/init:dev
+  - kubernit/runc:dev
+  - kubernit/containerd:dev
+  - kubernit/ca-certificates:dev
 onboot:
   - name: sysctl
-    image: wombat/sysctl:dev
+    image: kubernit/sysctl:dev
     pid: "host"
     capabilities:
       - CAP_SYS_ADMIN
@@ -16,11 +16,11 @@ onboot:
       - /etc/sysctl.d/01-kubernetes.conf:/etc/sysctl.d/01-kubernetes.conf
     readonly: false
   - name: sysfs
-    image: wombat/sysfs:dev
+    image: kubernit/sysfs:dev
     net: new
     ipc: new
   - name: dhcpcd
-    image: wombat/dhcpcd:dev
+    image: kubernit/dhcpcd:dev
     binds:
       - /run/resolvconf:/etc
     capabilities:
@@ -30,7 +30,7 @@ onboot:
       - CAP_SYS_ADMIN
     command: ["/sbin/dhcpcd", "--nobackground", "-f", "/dhcpcd.conf", "-1"]
   - name: metadata
-    image: wombat/metadata:dev
+    image: kubernit/metadata:dev
     binds:
       - /dev:/dev
       - /var:/var
@@ -45,7 +45,7 @@ onboot:
       - CAP_SYS_ADMIN
       - CAP_NET_ADMIN
   - name: format
-    image: wombat/format:dev
+    image: kubernit/format:dev
     binds:
       - /dev:/dev
     capabilities:
@@ -54,7 +54,7 @@ onboot:
     net: new
     ipc: new
   - name: mounts
-    image: wombat/mount:dev
+    image: kubernit/mount:dev
     command: ["/usr/bin/mountie", "/var/lib/"]
     binds:
       - /dev:/dev
@@ -130,7 +130,7 @@ onboot:
       - /run/config:/run/config
 services:
   - name: getty
-    image: wombat/getty:dev
+    image: kubernit/getty:dev
     env:
      - INSECURE=true
     cgroupsPath: systemreserved/getty
@@ -150,7 +150,7 @@ services:
     capabilities:
       - all
   - name: rngd
-    image: wombat/rngd:dev
+    image: kubernit/rngd:dev
     cgroupsPath: systemreserved/rngd
     capabilities:
       - CAP_SYS_ADMIN
@@ -159,7 +159,7 @@ services:
     net: new
     ipc: new
   - name: ntpd
-    image: wombat/openntpd:dev
+    image: kubernit/openntpd:dev
     cgroupsPath: systemreserved/ntpd
     binds:
       - /etc/resolv.conf:/etc/resolv.conf
@@ -170,7 +170,7 @@ services:
       - CAP_SETUID
       - CAP_SETGID
   - name: sshd
-    image: wombat/sshd:dev
+    image: kubernit/sshd:dev
     cgroupsPath: systemreserved/sshd
     pid: host
     binds:
@@ -188,7 +188,7 @@ services:
     capabilities:
       - all
   - name: kubelet
-    image: wombat/kubelet:dev
+    image: kubernit/kubelet:dev
     cgroupsPath: podruntime/kubelet
     binds:
       - /tmp:/tmp

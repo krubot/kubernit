@@ -1,6 +1,4 @@
-FROM wombat/alpine:v0.1 as alpine
-# containerd v1.1.x requires go1.10 which is currently a separate package in Alpine 3.7
-# Use the same version of go for consistency.
+FROM kubernit/alpine:v0.1 as alpine
 RUN \
   apk add \
   bash \
@@ -13,7 +11,7 @@ RUN \
   make \
   && true
 ENV GOPATH=/go PATH=$PATH:/go/bin
-ENV RUNC_COMMIT=69663f0bd4b60df09991c08812a60108003fa340
+ENV RUNC_COMMIT=029124da7af7360afa781a0234d1b083550f797c
 RUN mkdir -p $GOPATH/src/github.com/opencontainers && \
   cd $GOPATH/src/github.com/opencontainers && \
   git clone https://github.com/opencontainers/runc.git

@@ -1,6 +1,6 @@
 .PHONY: build
 
-ORG?=wombat
+ORG?=kubernit
 IMAGE=alpine
 DEPS=packages
 VERSION=v0.1

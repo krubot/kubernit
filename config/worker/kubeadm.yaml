@@ -1,13 +1,12 @@
-apiVersion: kubeadm.k8s.io/v1alpha3
+apiVersion: kubeadm.k8s.io/v1beta1
 caCertPath: /etc/kubernetes/pki/ca.crt
-discoveryFile: ""
-discoveryTimeout: 5m0s
-discoveryToken: s73ybu.6tw6wnqgp5z0wb77
-discoveryTokenAPIServers:
-- 192.168.58.10:6443
-discoveryTokenUnsafeSkipCAVerification: true
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: 192.168.58.10:6443
+    token: s73ybu.6tw6wnqgp5z0wb77
+    unsafeSkipCAVerification: true
+  timeout: 5m0s
+  tlsBootstrapToken: s73ybu.6tw6wnqgp5z0wb77
 kind: JoinConfiguration
 nodeRegistration:
   criSocket: /run/containerd/containerd.sock
-tlsBootstrapToken: s73ybu.6tw6wnqgp5z0wb77
-token: s73ybu.6tw6wnqgp5z0wb77

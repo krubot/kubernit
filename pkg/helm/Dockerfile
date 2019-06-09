@@ -1,4 +1,4 @@
-FROM wombat/alpine:v0.1 AS build
+FROM kubernit/alpine:v0.1 AS build
 
 ENV helm_version v2.9.1
 RUN apk add -U --no-cache \

@@ -1,4 +1,4 @@
-FROM alpine:3.8 AS mirror
+FROM alpine:3.9.2 AS mirror
 
 # update base image
 RUN apk update && apk upgrade -a
@@ -41,7 +41,7 @@ RUN go get -u github.com/LK4D4/vndr
 # Update `FROM` in `pkg/containerd/Dockerfile`, `pkg/init/Dockerfile` and
 # `test/pkg/containerd/Dockerfile` when changing this.
 ENV CONTAINERD_REPO=https://github.com/containerd/containerd.git
-ENV CONTAINERD_COMMIT=v1.2.1
+ENV CONTAINERD_COMMIT=v1.2.6
 RUN mkdir -p $GOPATH/src/github.com/containerd && \
   cd $GOPATH/src/github.com/containerd && \
   git clone https://github.com/containerd/containerd.git && \
@@ -51,7 +51,7 @@ RUN apk add --no-cache btrfs-progs-dev gcc libc-dev linux-headers make libseccom
 RUN cd $GOPATH/src/github.com/containerd/containerd && \
   make binaries EXTRA_FLAGS="-buildmode pie" EXTRA_LDFLAGS='-extldflags "-fno-PIC -static"' BUILD_TAGS="static_build"
 
-FROM alpine:3.7
+FROM alpine:3.9.2
 
 COPY --from=mirror /etc/apk/repositories /etc/apk/repositories
 COPY --from=mirror /etc/apk/repositories.upstream /etc/apk/repositories.upstream
