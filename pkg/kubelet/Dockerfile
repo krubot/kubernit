@@ -89,6 +89,8 @@ RUN apk add --no-cache --initdb -p /out \
     socat \
     util-linux \
     nfs-utils \
+    nghttp2 \
+    nghttp2-dev \
     && true
 
 RUN cp $GOPATH/src/github.com/kubernetes/kubernetes/_output/bin/kubelet /out/usr/bin/kubelet

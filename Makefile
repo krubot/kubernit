@@ -1,6 +1,6 @@
 .PHONY: all build vhd pkg
 
-PKG = init containerd runc ca-certificates sysctl sysfs metadata format mount dhcpcd rngd openntpd sshd kubelet getty nfsd init-wireguard
+PKG = init containerd runc ca-certificates sysctl sysfs metadata format mount dhcpcd rngd openntpd sshd kubelet getty nfsd what
 
 all: base $(PKG) iso
 

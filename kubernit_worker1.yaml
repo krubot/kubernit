@@ -1,5 +1,5 @@
 kernel:
-  image: linuxkit/kernel:5.0.5
+  image: linuxkit/kernel:5.1.6
   cmdline: "console=tty0 ipAddress=192.168.58.12 ipBroadcast=192.167.58.255 ipMask=24"
 init:
   - kubernit/init:dev
